@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Interactive Quiz App</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: linear-gradient(135deg, #f5d6e1, #bcf8f5);
+      margin: 0;
+      padding: 20px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+
+    .quiz-container {
+      background: #ffffff;
+      padding: 30px;
+      border-radius: 16px;
+      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+      max-width: 600px;
+      width: 100%;
+      animation: fadeIn 0.5s ease-in-out;
+    }
+
+    h2 {
+      margin-bottom: 20px;
+      color: #3a3a3a;
+    }
+
+    .option {
+      background: #ffe4e1;
+      color: #333;
+      padding: 12px 18px;
+      margin: 10px 0;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      border: 2px solid transparent;
+      font-weight: bold;
+    }
+
+    .option:hover {
+      background: #ffccd5;
+      transform: scale(1.02);
+    }
+
+    .correct {
+      background-color: #d4edda !important;
+      border-color: #28a745 !important;
+      color: #155724 !important;
+    }
+
+    .incorrect {
+      background-color: #f8d7da !important;
+      border-color: #dc3545 !important;
+      color: #721c24 !important;
+    }
+
+    #next-btn {
+      margin-top: 25px;
+      padding: 12px 25px;
+      background: linear-gradient(90deg, #5f72be, #9921e8);
+      color: white;
+      border: none;
+      border-radius: 25px;
+      cursor: pointer;
+      font-size: 16px;
+      display: none;
+      transition: background 0.3s ease;
+    }
+
+    #next-btn:hover {
+      background: linear-gradient(90deg, #4e62b1, #861cd7);
+    }
+
+    #score {
+      font-size: 22px;
+      font-weight: bold;
+      margin-top: 25px;
+      color: #333;
+      text-align: center;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(-10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+  </style>
+</head>
+<body>
+  <div class="quiz-container">
+    <h2 id="question">Loading...</h2>
+    <div id="options"></div>
+    <button id="next-btn">Next</button>
+    <div id="score"></div>
+  </div>
+
+  <script>
+    const quizData = [
+      {
+        question: "Which language runs in a web browser?",
+        options: ["Java", "C", "Python", "JavaScript"],
+        answer: "JavaScript"
+      },
+      {
+        question: "What does CSS stand for?",
+        options: ["Central Style Sheets", "Cascading Style Sheets", "Cascading Simple Sheets", "Cars SUVs Sailboats"],
+        answer: "Cascading Style Sheets"
+      },
+      {
+        question: "What year was JavaScript launched?",
+        options: ["1996", "1995", "1994", "None of the above"],
+        answer: "1995"
+      }
+    ];
+
+    let currentQuestionIndex = 0;
+    let score = 0;
+
+    const questionEl = document.getElementById('question');
+    const optionsEl = document.getElementById('options');
+    const nextBtn = document.getElementById('next-btn');
+    const scoreEl = document.getElementById('score');
+
+    function loadQuestion() {
+      const currentQuestion = quizData[currentQuestionIndex];
+      questionEl.textContent = currentQuestion.question;
+      optionsEl.innerHTML = "";
+
+      currentQuestion.options.forEach(option => {
+        const optionDiv = document.createElement("div");
+        optionDiv.classList.add("option");
+        optionDiv.textContent = option;
+        optionDiv.addEventListener("click", () => checkAnswer(optionDiv, option, currentQuestion.answer));
+        optionsEl.appendChild(optionDiv);
+      });
+
+      nextBtn.style.display = "none";
+    }
+
+    function checkAnswer(element, selected, correct) {
+      const allOptions = document.querySelectorAll(".option");
+      allOptions.forEach(opt => opt.style.pointerEvents = "none");
+
+      if (selected === correct) {
+        element.classList.add("correct");
+        score++;
+      } else {
+        element.classList.add("incorrect");
+        allOptions.forEach(opt => {
+          if (opt.textContent === correct) opt.classList.add("correct");
+        });
+      }
+      nextBtn.style.display = "inline-block";
+    }
+
+    nextBtn.addEventListener("click", () => {
+      currentQuestionIndex++;
+      if (currentQuestionIndex < quizData.length) {
+        loadQuestion();
+      } else {
+        showScore();
+      }
+    });
+
+    function showScore() {
+      questionEl.textContent = "🎉 Quiz Completed!";
+      optionsEl.innerHTML = "";
+      nextBtn.style.display = "none";
+      scoreEl.textContent = `Your Score: ${score} / ${quizData.length}`;
+    }
+
+    loadQuestion();
+  </script>
+</body>
+</html>
